@@ -187,7 +187,6 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 	}
 
 	function test_get_settings() {
-		$root_name = WP_Theme_JSON::ROOT_BLOCK_NAME;
 		$theme_json = new WP_Theme_JSON(
 			array(
 				'version'  => 1,
@@ -206,10 +205,8 @@ class WP_Theme_JSON_Test extends WP_UnitTestCase {
 					),
 				),
 				'styles'   => array(
-					$root_name => array(
-						'color' => array(
-							'link' => 'blue',
-						),
+					'color' => array(
+						'link' => 'blue',
 					),
 				),
 			)
