@@ -28,33 +28,11 @@ class WP_Theme_JSON {
 	private static $blocks_metadata = null;
 
 	/**
-	 * How to address all the blocks
-	 * in the theme.json file.
-	 */
-	const ALL_BLOCKS_NAME = 'defaults';
-
-	/**
-	 * The CSS selector for the * block,
-	 * only using to generate presets.
-	 *
-	 * @var string
-	 */
-	const ALL_BLOCKS_SELECTOR = ':root';
-
-	/**
-	 * How to address the root block
-	 * in the theme.json file.
-	 *
-	 * @var string
-	 */
-	const ROOT_BLOCK_NAME = 'root';
-
-	/**
 	 * The CSS selector for the root block.
 	 *
 	 * @var string
 	 */
-	const ROOT_BLOCK_SELECTOR = ':root';
+	const ROOT_SELECTOR = ':root';
 
 	const VALID_TOP_LEVEL_KEYS = array(
 		'version',
@@ -383,14 +361,7 @@ class WP_Theme_JSON {
 			return self::$blocks_metadata;
 		}
 
-		self::$blocks_metadata = array(
-			self::ROOT_BLOCK_NAME => array(
-				'selector' => self::ROOT_BLOCK_SELECTOR,
-			),
-			self::ALL_BLOCKS_NAME => array(
-				'selector' => self::ALL_BLOCKS_SELECTOR,
-			),
-		);
+		self::$blocks_metadata = array();
 
 		$registry = WP_Block_Type_Registry::get_instance();
 		$blocks   = $registry->get_all_registered();
@@ -611,7 +582,7 @@ class WP_Theme_JSON {
 	private static function get_presets_of_node( $node, $selector ) {
 		$output = '';
 
-		if ( WP_Theme_JSON::ROOT_BLOCK_SELECTOR === $selector ) {
+		if ( self::ROOT_SELECTOR === $selector ) {
 			// Classes at the global level do not need any CSS prefixed,
 			// and we don't want to increase its specificity.
 			$selector = '';
@@ -905,7 +876,7 @@ class WP_Theme_JSON {
 		if ( isset( $input['settings'] ) ) {
 			$settings_paths[] = array(
 				'path'     => array('settings'),
-				'selector' => self::ROOT_BLOCK_SELECTOR,
+				'selector' => self::ROOT_SELECTOR,
 			);
 		}
 		if ( isset( $input['settings']['blocks'] ) ) {
@@ -925,7 +896,7 @@ class WP_Theme_JSON {
 		if ( isset( $input['styles'] ) ) {
 			$styles_paths[] = array(
 				'path'     => array('styles'),
-				'selector' => self::ROOT_BLOCK_SELECTOR,
+				'selector' => self::ROOT_SELECTOR,
 				'elements' => self::ELEMENTS,
 			);
 		}

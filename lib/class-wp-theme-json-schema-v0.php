@@ -12,6 +12,20 @@
 class WP_Theme_JSON_Schema_V0 {
 
 	/**
+	 * How to address all the blocks
+	 * in the theme.json file.
+	 */
+	const ALL_BLOCKS_NAME = 'defaults';
+
+	/**
+	 * How to address the root block
+	 * in the theme.json file.
+	 *
+	 * @var string
+	 */
+	const ROOT_BLOCK_NAME = 'root';
+
+	/**
 	 * Data schema of each block within a theme.json.
 	 *
 	 * Example:
@@ -132,9 +146,14 @@ class WP_Theme_JSON_Schema_V0 {
 		);
 
 		// Overwrite the things that change.
-		$new['settings'] = self::process_settings( $old['settings'], $blocks_to_consolidate );
-		$new['styles']   = self::process_styles( $old['styles'], $blocks_to_consolidate );
-		$new['version']  = $version;
+		if ( isset( $old['settings' ] ) ) {
+			$new['settings'] = self::process_settings( $old['settings'], $blocks_to_consolidate );
+		}
+		if ( isset( $old['styles'] ) ) {
+			$new['styles'] = self::process_styles( $old['styles'], $blocks_to_consolidate );
+		}
+
+		$new['version'] = $version;
 
 		return $new;
 	}
@@ -152,14 +171,14 @@ class WP_Theme_JSON_Schema_V0 {
 		);
 
 		// 'defaults' settings become top-level.
-		if ( isset( $settings[ WP_Theme_JSON::ALL_BLOCKS_NAME] ) ) {
-			$new = $settings[ WP_Theme_JSON::ALL_BLOCKS_NAME ];
-			unset( $settings[ WP_Theme_JSON::ALL_BLOCKS_NAME ] );
+		if ( isset( $settings[ self::ALL_BLOCKS_NAME] ) ) {
+			$new = $settings[ self::ALL_BLOCKS_NAME ];
+			unset( $settings[ self::ALL_BLOCKS_NAME ] );
 		}
 
 		// 'root' settings override 'defaults'.
-		if ( isset( $settings[ WP_Theme_JSON::ROOT_BLOCK_NAME ] ) ) {
-			$new = array_replace_recursive( $new, $settings[ WP_Theme_JSON::ROOT_BLOCK_NAME ] );
+		if ( isset( $settings[ self::ROOT_BLOCK_NAME ] ) ) {
+			$new = array_replace_recursive( $new, $settings[ self::ROOT_BLOCK_NAME ] );
 
 			// The array_replace_recursive algorithm merges at the leaf level.
 			// This means that when a leaf value is an array,
@@ -171,7 +190,7 @@ class WP_Theme_JSON_Schema_V0 {
 			foreach( $paths_to_override as $path ) {
 				$root_value = _wp_array_get(
 					$settings,
-					array_merge( array( WP_Theme_JSON::ROOT_BLOCK_NAME), $path ),
+					array_merge( array( self::ROOT_BLOCK_NAME), $path ),
 					null
 				);
 				if ( null !== $root_value ) {
@@ -179,7 +198,7 @@ class WP_Theme_JSON_Schema_V0 {
 				}
 			}
 
-			unset( $settings[ WP_Theme_JSON::ROOT_BLOCK_NAME ] );
+			unset( $settings[ self::ROOT_BLOCK_NAME ] );
 		}
 
 		if ( empty( $settings ) ) {
@@ -223,9 +242,9 @@ class WP_Theme_JSON_Schema_V0 {
 		$new = array();
 
 		// Styles within root become top-level.
-		if ( isset( $styles[ WP_Theme_JSON::ROOT_BLOCK_NAME ] ) ) {
-			$new = $styles[ WP_Theme_JSON::ROOT_BLOCK_NAME ];
-			unset( $styles[ WP_Theme_JSON::ROOT_BLOCK_NAME ] );
+		if ( isset( $styles[ self::ROOT_BLOCK_NAME ] ) ) {
+			$new = $styles[ self::ROOT_BLOCK_NAME ];
+			unset( $styles[ self::ROOT_BLOCK_NAME ] );
 
 			// Transform root.styles.color.link into elements.link.color.text.
 			if ( isset( $new['color']['link'] ) ) {
