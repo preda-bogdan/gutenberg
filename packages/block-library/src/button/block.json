@@ -38,12 +38,6 @@
 		"placeholder": {
 			"type": "string"
 		},
-		"borderRadius": {
-			"type": "number"
-		},
-		"style": {
-			"type": "object"
-		},
 		"backgroundColor": {
 			"type": "string"
 		},
@@ -67,6 +61,10 @@
 		},
 		"fontSize": true,
 		"reusable": false,
+		"__experimentalBorder": {
+			"radius": true,
+			"__experimentalSkipSerialization": true
+		},
 		"__experimentalFontFamily": true,
 		"__experimentalSelector": ".wp-block-button__link"
 	},
