@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useReducer, createPortal, useMemo } from '@wordpress/element';
+import { useReducer, createPortal } from '@wordpress/element';
 import {
 	BlockList,
 	BlockSelectionClearer,
@@ -19,10 +19,8 @@ import {
 /**
  * Internal dependencies
  */
-import SidebarEditorProvider from './sidebar-editor-provider';
 import Inspector, { BlockInspectorButton } from '../inspector';
-import Header from '../header';
-import useInserter from '../inserter/use-inserter';
+import SidebarEditorProvider from './sidebar-editor-provider';
 
 const inspectorOpenStateReducer = ( state, action ) => {
 	switch ( action ) {
@@ -54,13 +52,6 @@ export default function SidebarBlockEditor( { sidebar, inserter } ) {
 	const parentContainer = document.getElementById(
 		'customize-theme-controls'
 	);
-	const [ isInserterOpened, setIsInserterOpened ] = useInserter( inserter );
-	const settings = useMemo(
-		() => ( {
-			__experimentalSetIsInserterOpened: setIsInserterOpened,
-		} ),
-		[]
-	);
 
 	return (
 		<>
@@ -70,16 +61,8 @@ export default function SidebarBlockEditor( { sidebar, inserter } ) {
 					<div hidden={ isInspectorOpened && ! isInspectorAnimating }>
 						<SidebarEditorProvider
 							sidebar={ sidebar }
-							settings={ settings }
+							inserter={ inserter }
 						>
-							<BlockEditorKeyboardShortcuts />
-
-							<Header
-								inserter={ inserter }
-								isInserterOpened={ isInserterOpened }
-								setIsInserterOpened={ setIsInserterOpened }
-							/>
-
 							<BlockSelectionClearer>
 								<WritingFlow>
 									<ObserveTyping>

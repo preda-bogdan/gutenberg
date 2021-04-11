@@ -1,19 +1,32 @@
 /**
  * WordPress dependencies
  */
-import { BlockEditorProvider } from '@wordpress/block-editor';
+import { useMemo } from '@wordpress/element';
+import {
+	BlockEditorProvider,
+	BlockEditorKeyboardShortcuts,
+} from '@wordpress/block-editor';
 
 /**
  * Internal dependencies
  */
 import useSidebarBlockEditor from './use-sidebar-block-editor';
+import Header from '../header';
+import useInserter from '../inserter/use-inserter';
 
 export default function SidebarEditorProvider( {
 	sidebar,
-	settings,
+	inserter,
 	children,
 } ) {
 	const [ blocks, onInput, onChange ] = useSidebarBlockEditor( sidebar );
+	const [ isInserterOpened, setIsInserterOpened ] = useInserter( inserter );
+	const settings = useMemo(
+		() => ( {
+			__experimentalSetIsInserterOpened: setIsInserterOpened,
+		} ),
+		[]
+	);
 
 	return (
 		<BlockEditorProvider
@@ -23,6 +36,14 @@ export default function SidebarEditorProvider( {
 			settings={ settings }
 			useSubRegistry={ false }
 		>
+			<BlockEditorKeyboardShortcuts />
+
+			<Header
+				inserter={ inserter }
+				isInserterOpened={ isInserterOpened }
+				setIsInserterOpened={ setIsInserterOpened }
+			/>
+
 			{ children }
 		</BlockEditorProvider>
 	);
