@@ -10,6 +10,7 @@ import { useViewportMatch, useMergeRefs } from '@wordpress/compose';
 import { forwardRef, useRef } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { getBlockType, withBlockContentContext } from '@wordpress/blocks';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -49,21 +50,6 @@ function UncontrolledInnerBlocks( props ) {
 		__experimentalLayout,
 	} = props;
 
-	useNestedSettingsUpdate(
-		clientId,
-		allowedBlocks,
-		templateLock,
-		captureToolbars,
-		orientation
-	);
-
-	useInnerBlockTemplateSync(
-		clientId,
-		template,
-		templateLock,
-		templateInsertUpdatesSelection
-	);
-
 	const context = useSelect(
 		( select ) => {
 			const block = select( blockEditorStore ).getBlock( clientId );
@@ -76,6 +62,30 @@ function UncontrolledInnerBlocks( props ) {
 			return getBlockContext( block.attributes, blockType );
 		},
 		[ clientId ]
+	);
+
+	const FilteredAllowedBlocks = useSelect( ( select ) => {
+		const block = select( blockEditorStore ).getBlock( clientId );
+		const blockFilterName = block.name.replace( '/', '-' );
+		return applyFilters(
+			`editor.InnerBlocks.${ blockFilterName }.allowedBlocks`,
+			allowedBlocks
+		);
+	} );
+
+	useNestedSettingsUpdate(
+		clientId,
+		FilteredAllowedBlocks,
+		templateLock,
+		captureToolbars,
+		orientation
+	);
+
+	useInnerBlockTemplateSync(
+		clientId,
+		template,
+		templateLock,
+		templateInsertUpdatesSelection
 	);
 
 	// This component needs to always be synchronous as it's the one changing
